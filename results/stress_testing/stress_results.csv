@@ -1,0 +1,7 @@
+scenario,path_rmse,max_path_error,max_lateral_acceleration,completion_percent,stable,completed,passed,stop_reason
+Normal,0.04646938150106772,0.1001875580813942,1.073293708967954,100.0,True,True,True,Reached final path index
+Large Offset,0.05825595770677556,0.09929656582329775,6.627972809803562,100.0,True,True,True,Reached final path index
+Heading Error,0.04749379731257841,0.10002904339245494,0.9790992461536169,100.0,True,True,True,Reached final path index
+Sharp Curve,0.0780879447065304,0.12533594425645395,2.073613554783875,100.0,True,True,True,Reached final path index
+Low Speed,0.051239297279274426,0.10020080586767925,0.09444052791252838,100.0,True,True,True,Reached final path index
+Combined Stress,0.07962490911043002,0.12676621652664372,6.118911432389578,100.0,True,True,True,Reached final path index
