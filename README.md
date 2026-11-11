@@ -1,149 +1,182 @@
 Autonomous Vehicle Planning & Control Simulation
 
-A Python-based autonomous vehicle simulation framework for path tracking, longitudinal control, speed planning, controller optimization, and performance evaluation.
+A Python-based autonomous vehicle simulation project focused on path tracking, motion control, speed planning, and performance optimization.
 
-This project explores how an autonomous vehicle follows reference trajectories under different road geometries and operating conditions. It integrates a kinematic bicycle model, Pure Pursuit lateral control, PID longitudinal control, steering rate limiting, and curvature-based speed planning.
+Developed by Haoyuan Xu | Mechanical Engineering | Virginia Tech
 
-The project emphasizes not only successful path tracking, but also quantitative evaluation, reproducible experiments, and understanding controller limitations.
+This project implements a modular autonomous vehicle planning and control framework using Python. It combines a kinematic bicycle model, Pure Pursuit lateral control, PID longitudinal control, adaptive lookahead optimization, steering rate limiting, and curvature-based speed planning.
 
-1. Project Demo
+The goal is to develop, test, and improve vehicle control algorithms under different driving conditions, including irregular road geometries and challenging initial vehicle states.
 
-Random Path Tracking Challenge
+1. Project Demonstration
 
-The vehicle follows a procedurally generated, smooth but irregular road containing turns of varying direction and curvature.
+Random Path Tracking
+
+One of the main features of this project is the ability to track randomly generated, irregular road trajectories.
+
+Unlike simple sinusoidal paths, these roads contain varying curvature, unpredictable turns, and different levels of difficulty.
 
 
 
-The animation visualizes the reference path, actual vehicle trajectory, vehicle heading, and live control metrics.
+The animation demonstrates:
+
+Reference trajectory and actual vehicle trajectory
+
+Real-time vehicle position and heading
+
+Adaptive steering control
+
+Vehicle speed and target speed
+
+Path tracking error
+
+Lateral acceleration
 
 Original Vehicle Simulation
+
+The original simulation demonstrates the vehicle following a predefined reference path using Pure Pursuit control.
 
 
 
 2. Key Features
 
-Kinematic Bicycle Model: Simulates planar vehicle motion using position, heading, velocity, wheelbase, and steering angle.
+Component
 
-Pure Pursuit Controller: Computes steering commands based on the vehicle's position, heading, and a lookahead target.
+Description
 
-Adaptive Lookahead: Adjusts the lookahead distance according to vehicle speed.
+Kinematic Bicycle Model
 
-Steering Rate Limiter: Limits how quickly steering commands can change.
+Simulates vehicle position, heading, and velocity
 
-PID Speed Controller: Regulates longitudinal vehicle speed.
+Pure Pursuit Controller
 
-Curvature-Based Speed Planner: Generates target speeds based on road curvature and acceleration constraints.
+Calculates steering commands for path tracking
 
-Scenario Testing: Evaluates tracking across different path geometries and target speeds.
+Adaptive Lookahead
 
-Parameter Optimization: Compares lookahead settings and validates performance across multiple scenarios.
+Adjusts lookahead distance based on vehicle speed
 
-Stress Testing: Tests performance under challenging initial conditions and road geometries.
+Steering Rate Limiter
 
-Random Path Tracking: Generates reproducible irregular roads and evaluates vehicle tracking performance.
+Restricts rapid changes in steering angle
 
-Visualization: Produces trajectory plots, performance charts, CSV results, and animated GIF demonstrations.
+PID Speed Controller
 
-3. System Architecture
+Controls longitudinal acceleration and braking
 
-The simulation follows a modular planning-and-control structure:
-
-Reference Path
-      |
-      v
 Curvature-Based Speed Planner
-      |
-      v
-Target Speed ----------------------+
-                                  |
-Vehicle State                     |
-      |                           |
-      +--> Pure Pursuit           +--> PID Speed Control
-      |         |                           |
-      |    Steering Command           Acceleration
-      |         |                           |
-      |    Steering Rate Limiter            |
-      |         |                           |
-      +---------+---------------------------+
-                |
-                v
-        Kinematic Bicycle Model
-                |
-                v
-          Updated Vehicle State
-                |
-                v
-        Performance Evaluation
 
-The vehicle model is simulated in a closed loop, with updated states continuously fed back into the controllers.
+Adjusts target speed according to road curvature
+
+Scenario Testing
+
+Evaluates performance across different road geometries
+
+Parameter Optimization
+
+Identifies effective lookahead parameters
+
+Stress Testing
+
+Evaluates controller behavior under challenging conditions
+
+Random Path Generation
+
+Creates reproducible irregular road trajectories
+
+Performance Visualization
+
+Generates trajectory plots, graphs, CSV files, and GIF animations
+
+3. System Overview
+
+The simulation uses a closed-loop control architecture.
+
+Step 1 — Path Generation
+
+A reference trajectory is generated using predefined mathematical paths or randomized control points.
+
+Step 2 — Speed Planning
+
+The speed planner analyzes path curvature and generates a target velocity profile.
+
+Step 3 — Lateral Control
+
+The Pure Pursuit controller calculates the desired steering angle using the vehicle's current position, heading, and lookahead target.
+
+Step 4 — Longitudinal Control
+
+A PID controller calculates acceleration or braking commands to track the target velocity.
+
+Step 5 — Vehicle Dynamics
+
+The kinematic bicycle model updates the vehicle's position, heading, and speed.
+
+Step 6 — Performance Evaluation
+
+The simulation records tracking error, velocity, steering angle, lateral acceleration, and path completion.
+
+These steps repeat throughout the simulation to create a closed-loop vehicle control system.
 
 4. Vehicle Dynamics Model
 
-A kinematic bicycle model is used to approximate planar vehicle motion.
+The project uses a kinematic bicycle model to approximate planar vehicle motion.
 
-The governing equations are:
+The model describes vehicle movement using the following relationships:
 
-[
-\dot{x} = v\cos(\psi)
-]
+x_dot = velocity * cos(yaw)
 
-[
-\dot{y} = v\sin(\psi)
-]
+y_dot = velocity * sin(yaw)
 
-[
-\dot{\psi} = \frac{v}{L}\tan(\delta)
-]
+yaw_dot = (velocity / wheelbase) * tan(steering_angle)
 
-[
-\dot{v} = a
-]
+velocity_dot = acceleration
 
 Where:
 
-(x,y): Vehicle position
+x, y: Vehicle position
 
-(v): Vehicle speed
+velocity: Longitudinal vehicle speed
 
-(\psi): Vehicle heading
+yaw: Vehicle heading angle
 
-(L): Wheelbase
+wheelbase: Distance between front and rear axles
 
-(\delta): Steering angle
+steering_angle: Front-wheel steering angle
 
-(a): Longitudinal acceleration
+acceleration: Longitudinal acceleration
 
-The model provides a lightweight environment for evaluating control algorithms without requiring a full vehicle dynamics simulator.
+This model provides an efficient environment for developing and evaluating vehicle control algorithms.
 
-5. Lateral Control: Pure Pursuit
+5. Lateral Control — Pure Pursuit
 
-Pure Pursuit calculates a steering command based on a target point ahead of the vehicle.
+Pure Pursuit is a geometric path-tracking algorithm that calculates steering commands based on a target point ahead of the vehicle.
 
-The adaptive lookahead distance is defined as:
+The controller uses an adaptive lookahead distance:
 
-[
-L_d = L_{d,0} + kv
-]
+lookahead_distance = base_lookahead + gain * velocity
 
-Where:
+The lookahead distance changes with vehicle speed to balance tracking accuracy and steering responsiveness.
 
-(L_{d,0}): Base lookahead distance
+A shorter lookahead distance generally improves responsiveness to curvature changes but can lead to more aggressive steering.
 
-(k): Speed-dependent lookahead gain
+A longer lookahead distance generally produces smoother steering but may increase tracking error in sharp turns.
 
-(v): Vehicle speed
+Steering Rate Limiting
 
-Smaller lookahead distances can improve responsiveness but may introduce aggressive steering behavior. Larger lookahead distances generally produce smoother steering but can increase corner-cutting and tracking error.
+To avoid instantaneous steering changes, a steering rate limiter restricts how quickly the steering command can change between simulation steps.
 
-A steering rate limiter is also included to restrict abrupt steering changes.
+This improves the realism of steering commands compared with an unrestricted controller, although it does not fully model a physical steering actuator.
 
 6. Lookahead Parameter Optimization
 
 A parameter sweep was conducted to evaluate different adaptive lookahead gains.
 
+Optimization Results
+
 Lookahead Gain (k)
 
-Path Tracking RMSE
+Tracking RMSE
 
 0.20
 
@@ -165,49 +198,61 @@ Path Tracking RMSE
 
 0.126 m
 
-The best-performing gain in this experiment was k = 0.20.
+The lowest RMSE in this experiment was achieved with:
+
+Optimized Lookahead Gain: k = 0.20
 
 Cross-Scenario Validation
 
-The optimized lookahead configuration was subsequently evaluated across 12 test conditions.
+The optimized controller was evaluated across 12 different test conditions.
 
-Improved RMSE in 12 out of 12 tested conditions
+Results:
 
-Average reported RMSE improvement: 11.11%
+Lower RMSE in 12 out of 12 evaluated conditions
 
-Reported spatial path coverage: 100%
+Average reported RMSE improvement of 11.11%
 
-These findings apply to the simulated scenarios and should not be interpreted as proof of optimal performance under all driving conditions.
+Reported spatial path coverage of 100%
+
+These results demonstrate the effectiveness of parameter optimization within the tested simulation conditions.
+
+They do not establish that the selected gain is optimal for every possible road geometry or driving condition.
 
 7. Longitudinal Control and Speed Planning
 
-The longitudinal controller uses PID feedback to track the planned vehicle speed.
+The project implements a PID longitudinal controller and a curvature-based speed planner.
 
-A curvature-based speed planner reduces the target speed in sharper turns.
+PID Speed Control
 
-The underlying relationship is:
+The PID controller calculates acceleration and braking commands based on the difference between target speed and actual vehicle speed.
 
-[
-a_y = v^2|\kappa|
-]
+The controller continuously adjusts acceleration to reduce speed tracking error.
 
-Where:
+Curvature-Based Speed Planning
 
-(a_y): Lateral acceleration
+The speed planner reduces target speed when approaching sharper turns.
 
-(v): Vehicle speed
+The relationship between vehicle speed, road curvature, and lateral acceleration is:
 
-(\kappa): Path curvature
+lateral_acceleration = velocity**2 * abs(curvature)
 
-The planner uses a lateral acceleration target of 0.5 m/s² in the relevant experiments.
+A corresponding curvature-based speed target can be calculated using:
 
-This is a planning target rather than a guaranteed physical limit. Actual simulated lateral acceleration may exceed the target because of tracking deviations, steering dynamics, and controller behavior.
+target_speed = sqrt(max_lateral_acceleration / abs(curvature))
+
+The actual implementation also considers speed and acceleration constraints.
+
+The relevant experiments use a lateral acceleration planning target of:
+
+0.5 m/s²
+
+This value is a planning target, not a strictly enforced limit. Actual lateral acceleration may exceed it during simulation.
 
 8. Scenario Testing
 
-The simulation evaluates multiple road geometries and vehicle operating conditions.
+To evaluate performance under different operating conditions, the project includes automated scenario testing.
 
-Road categories include:
+Road Geometries
 
 Gentle curves
 
@@ -215,7 +260,7 @@ Medium curves
 
 Sharp curves
 
-Test speeds include:
+Test Speeds
 
 6 m/s
 
@@ -225,39 +270,47 @@ Test speeds include:
 
 12 m/s
 
-Fixed-speed and planned-speed configurations are compared across 24 test cases.
+Two speed control strategies are evaluated:
 
-Performance evaluation includes tracking error, speed behavior, path completion, and lateral acceleration.
+Fixed target speed
+
+Curvature-based planned speed
+
+This produces a total of 24 test configurations.
+
+Performance is evaluated using tracking accuracy, speed behavior, path completion, and lateral acceleration.
 
 9. Random Path Tracking Challenge
 
-To evaluate performance beyond predictable sinusoidal trajectories, the project includes a random-path generation and tracking experiment.
+To move beyond predictable reference trajectories, a random path tracking experiment was developed.
 
-Path Generation
+The purpose of this experiment is to evaluate how the controller responds to irregular road geometries.
 
-Random control points are generated using reproducible random seeds. The resulting path is interpolated and smoothed to create a continuous reference trajectory.
+Random Path Generation
 
-Three scenarios are available:
+The road generator creates random lateral control points along a forward-moving path.
+
+Interpolation and Gaussian smoothing are applied to create continuous, smooth trajectories suitable for vehicle simulation.
+
+Random seeds make the experiments reproducible.
+
+Three Random Road Scenarios
 
 Scenario
 
-Description
+Characteristics
 
 Random Smooth
 
-Irregular road with relatively gentle turns
+Gentle, irregular changes in road direction
 
 Random Sharp
 
-More frequent and pronounced changes in curvature
+More frequent and pronounced curvature changes
 
 Random Extreme
 
-More challenging road geometry with stronger directional changes
-
-Trajectory Comparison
-
-The following plots compare the reference path and actual simulated trajectory.
+Stronger directional changes and more challenging geometry
 
 Random Smooth
 
@@ -271,19 +324,19 @@ Random Extreme
 
 
 
-Evaluation Metrics
+Performance Metrics
 
-Each experiment records:
+The random path experiment evaluates:
 
 Root Mean Square Tracking Error (RMSE)
 
 Maximum tracking error
 
-Maximum simulated lateral acceleration
+Maximum lateral acceleration
 
-Path progress
+Path progress percentage
 
-Completion status
+Path completion status
 
 Numerical failure status
 
@@ -293,29 +346,45 @@ Results are exported to:
 
 results/random_tracking/random_tracking_results.csv
 
-These scenarios are intended to reveal both controller strengths and failure cases. A visually close trajectory does not necessarily imply acceptable vehicle dynamics or safe operation.
+The experiment is designed to reveal both successful tracking behavior and controller limitations under more complex road geometries.
 
-10. Stress Testing and Limitations
+10. Stress Testing and Robustness Evaluation
 
-Six preliminary stress-test scenarios were evaluated, including:
+Six stress-test scenarios were used to evaluate controller behavior.
 
-Normal operation
+Test Scenario
 
-Large initial lateral offset
+Description
 
-Initial heading error
+Normal
 
-Sharp curve
+Standard initial conditions
 
-Low-speed operation
+Large Offset
 
-Combined stress conditions
+Large initial lateral displacement
 
-All six passed the project's preliminary tracking and completion criteria.
+Heading Error
 
-However, the lateral acceleration target of 0.5 m/s² was exceeded in five of the six scenarios.
+Incorrect initial heading
 
-The maximum observed lateral accelerations were:
+Sharp Curve
+
+Increased road curvature
+
+Low Speed
+
+Reduced initial or operating speed
+
+Combined Stress
+
+Multiple challenging conditions combined
+
+All six scenarios passed the project's preliminary tracking and completion criteria.
+
+However, these criteria do not guarantee that the simulated vehicle satisfies all dynamic constraints.
+
+Maximum Lateral Acceleration
 
 Scenario
 
@@ -345,9 +414,13 @@ Combined Stress
 
 6.119 m/s²
 
-These results demonstrate an important limitation: successful path tracking alone does not guarantee that dynamic constraints are satisfied.
+Five of the six scenarios exceeded the lateral acceleration planning target of 0.5 m/s².
 
-The current simulator uses a kinematic model and does not represent tire saturation, detailed suspension behavior, or full vehicle dynamics. It is intended for algorithm development and educational experimentation, not real-world autonomous driving deployment.
+This highlights an important engineering limitation:
+
+Accurate path tracking does not necessarily mean that the vehicle is operating within its desired dynamic constraints.
+
+Improving constraint enforcement is therefore one of the main directions for future development.
 
 11. Installation
 
@@ -361,26 +434,30 @@ Matplotlib
 
 Pillow
 
-Clone the repository:
+Clone the Repository
 
 git clone https://github.com/Xuhaoyuan-creator/autonomous-driving-planning-control.git
 cd autonomous-driving-planning-control
 
-Create a virtual environment:
+Create a Virtual Environment
 
 python -m venv .venv
 
-Activate it on Windows PowerShell:
+Activate the Environment
+
+Windows PowerShell:
 
 .\.venv\Scripts\Activate.ps1
 
-Install dependencies:
+Install Dependencies
 
 pip install -r requirements.txt
 
-12. Running the Experiments
+12. Running the Project
 
-Generate Random Roads
+Run the following commands from the project root directory.
+
+Generate Random Paths
 
 python random_path_generator.py
 
@@ -396,11 +473,11 @@ Run Scenario Testing
 
 python scenario_testing.py
 
-Optimize Lookahead Gain
+Optimize Lookahead Parameters
 
 python optimize_lookahead.py
 
-Validate Lookahead Performance
+Validate Lookahead Optimization
 
 python validate_lookahead.py
 
@@ -408,70 +485,133 @@ Run Stress Tests
 
 python stress_testing.py
 
-Generate Performance Report
+Generate the Performance Report
 
 python generate_performance_report.py
 
 13. Results and Documentation
 
-Generated outputs are organized under the results/ directory.
+Simulation outputs are stored in the results/ directory.
 
-The project includes:
+The project generates:
 
-Tracking trajectory visualizations
+Reference and actual trajectory comparisons
 
-Controller comparison plots
+Tracking error plots
 
-Speed and lateral acceleration plots
+Speed tracking plots
 
-Optimization and validation results
+Lateral acceleration plots
 
-Stress-test results
+Lookahead optimization results
 
-Random-road tracking experiments
+Cross-scenario validation results
+
+Stress-testing results
+
+Random path tracking results
 
 Animated vehicle simulations
 
-Performance reports
+CSV performance data
 
-For additional analysis, see:
+Technical Performance Report
 
-Performance Report
+View the Full Performance Report
 
 14. Future Development
 
-Planned improvements include:
+The next stages of development will focus on improving the realism, reliability, and capability of the simulation.
 
-Dynamic Constraint Enforcement: Improve speed planning and feedback control to reduce lateral acceleration violations.
+1. Dynamic Constraint Enforcement
 
-More Realistic Vehicle Dynamics: Incorporate steering actuator dynamics, tire behavior, and dynamic bicycle models.
+Improve speed planning and feedback control to reduce lateral acceleration violations.
 
-Improved Path Representation: Introduce spline-based paths and arc-length parameterization.
+2. Dynamic Bicycle Model
 
-Robustness Evaluation: Expand randomized testing across path curvature, initial conditions, and vehicle parameters.
+Extend the kinematic model to include more realistic lateral vehicle dynamics.
 
-Controller Comparison: Compare Pure Pursuit against Stanley and Model Predictive Control (MPC).
+3. Advanced Path Generation
 
-Automated Testing: Add regression tests and continuous integration for simulation results.
+Introduce spline-based trajectories, improved curvature calculation, and arc-length parameterization.
 
-Enhanced Visualization: Create side-by-side animations comparing baseline and optimized controllers.
+4. Controller Comparison
 
-15. Technologies
+Implement and compare additional lateral controllers, including:
 
-Language: Python
+Stanley Controller
 
-Libraries: NumPy, Matplotlib, Pillow
+Model Predictive Control (MPC)
 
-Methods: Kinematic Bicycle Model, Pure Pursuit, PID Control, Curvature-Based Speed Planning, Parameter Sweeps, Simulation-Based Validation
+5. Automated Robustness Testing
 
-Tools: VS Code, Git, GitHub
+Expand randomized testing across different road geometries, vehicle parameters, and initial conditions.
 
-Disclaimer
+6. Improved Visualization
 
-This project is a research-oriented educational simulation. Its results are specific to the implemented models, controllers, parameters, and test conditions.
+Create side-by-side animations comparing fixed-speed and curvature-based speed planning.
 
-It does not constitute a validated autonomous driving system and should not be used to control a real vehicle without substantial additional engineering, verification, and safety testing.
+7. Software Engineering Improvements
 
-Author: Haoyuan Xu
+Add automated regression tests, continuous integration, and improved experiment configuration.
 
-Mechanical Engineering Student, Virginia Tech
+15. Technologies Used
+
+Category
+
+Technologies
+
+Programming
+
+Python
+
+Numerical Computing
+
+NumPy
+
+Visualization
+
+Matplotlib, Pillow
+
+Vehicle Modeling
+
+Kinematic Bicycle Model
+
+Lateral Control
+
+Pure Pursuit
+
+Longitudinal Control
+
+PID
+
+Planning
+
+Curvature-Based Speed Planning
+
+Optimization
+
+Parameter Sweeps and Simulation-Based Evaluation
+
+Development Tools
+
+VS Code, Git, GitHub
+
+Project Limitations
+
+This project uses a simplified kinematic bicycle model and does not fully simulate tire forces, tire saturation, suspension dynamics, or physical steering actuators.
+
+The reported results are specific to the implemented simulation models, parameters, and test scenarios.
+
+This project is intended for educational and engineering experimentation and is not a validated autonomous driving system for deployment on public roads.
+
+About the Developer
+
+Haoyuan Xu
+
+Mechanical Engineering Student
+Virginia Tech
+
+Interested in autonomous driving, vehicle dynamics, motion planning, control systems, and simulation-based engineering.
+
+GitHub: Xuhaoyuan-creator
